@@ -1,8 +1,10 @@
 // app/(tabs)/index.tsx
 
-import Ionicons from "@expo/vector-icons/Ionicons"; // Import Ionicons for icons
+import Ionicons from "@expo/vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react"; // Import useState and useEffect
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Modal,
@@ -11,31 +13,32 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from "react-native"; // Import Modal, Alert, TextInput
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-// --- Interfaces for Type Safety (Good Practice for TypeScript) ---
+// --- Interfaces ---
 interface ShoppingItem {
   id: string;
   name: string;
   priority: "High" | "Middle" | "Low";
   bought: boolean;
-  dateAdded: string; // ISO string format (e.g., "2023-07-10T10:00:00Z")
+  dateAdded: string;
   quantity: number;
+  dateBought?: string;
 }
 
 interface ShoppingListItemProps {
   item: ShoppingItem;
   onToggleBought: (id: string) => void;
   onRemove: (id: string) => void;
-  onEdit: (item: ShoppingItem) => void; // New prop for editing
+  onEdit: (item: ShoppingItem) => void;
 }
 
 interface AddEditItemModalProps {
   isVisible: boolean;
   onClose: () => void;
   onSave: (item: ShoppingItem) => void;
-  initialItem?: ShoppingItem | null; // Optional: for editing an existing item
+  initialItem?: ShoppingItem | null;
 }
 
 // --- Helper Component: Add/Edit Item Modal ---
@@ -51,7 +54,6 @@ const AddEditItemModal: React.FC<AddEditItemModalProps> = ({
     initialItem?.priority || "Middle"
   );
 
-  // Effect to update form fields when initialItem changes
   useEffect(() => {
     if (initialItem) {
       setName(initialItem.name);
@@ -103,11 +105,11 @@ const AddEditItemModal: React.FC<AddEditItemModalProps> = ({
   const getPriorityColor = (priorityLevel: string) => {
     switch (priorityLevel) {
       case "High":
-        return "#ef4444"; // red-500
+        return "#ef4444";
       case "Middle":
-        return "#f97316"; // orange-500
+        return "#f97316";
       case "Low":
-        return "#22c55e"; // green-500
+        return "#22c55e";
       default:
         return "#f97316";
     }
@@ -249,7 +251,6 @@ const ShoppingListItem: React.FC<ShoppingListItemProps> = ({
   onRemove,
   onEdit,
 }) => {
-  // Determine priority text color
   const priorityColorClass =
     item.priority === "High"
       ? "text-red-500"
@@ -257,7 +258,6 @@ const ShoppingListItem: React.FC<ShoppingListItemProps> = ({
         ? "text-orange-500"
         : "text-green-500";
 
-  // Calculate days since added
   const calculateDaysSinceAdded = (dateAddedString: string) => {
     const addedDate = new Date(dateAddedString);
     const today = new Date();
@@ -271,7 +271,6 @@ const ShoppingListItem: React.FC<ShoppingListItemProps> = ({
   return (
     <View className="flex-row items-center justify-between py-3 border-b border-gray-200">
       <View className="flex-row items-center flex-1">
-        {/* Tick Mark */}
         <TouchableOpacity
           onPress={() => onToggleBought(item.id)}
           className="mr-3"
@@ -282,7 +281,6 @@ const ShoppingListItem: React.FC<ShoppingListItemProps> = ({
             color={item.bought ? "#F4C70D" : "gray"}
           />
         </TouchableOpacity>
-        {/* Item Name, Quantity and Priority */}
         <View className="flex-1 pr-2">
           <Text
             className={`text-lg font-medium ${item.bought ? "line-through text-gray-500" : "text-gray-800"}`}
@@ -297,7 +295,6 @@ const ShoppingListItem: React.FC<ShoppingListItemProps> = ({
           </Text>
         </View>
       </View>
-      {/* Edit and Remove Marks */}
       <View className="flex-row items-center">
         <TouchableOpacity onPress={() => onEdit(item)} className="ml-2 p-1">
           <Ionicons name="create-outline" size={24} color="blue" />
@@ -313,148 +310,93 @@ const ShoppingListItem: React.FC<ShoppingListItemProps> = ({
   );
 };
 
-// --- Main Screen Component: TabHomeScreen ---
+// --- Main Screen Component ---
 export default function TabHomeScreen() {
   const router = useRouter();
-
-  // State for the shopping list
-  const [shoppingList, setShoppingList] = useState<ShoppingItem[]>([
-    {
-      id: "1",
-      name: "Milk",
-      priority: "High",
-      bought: false,
-      dateAdded: "2024-07-01T10:00:00Z",
-      quantity: 2,
-    },
-    {
-      id: "2",
-      name: "Eggs",
-      priority: "High",
-      bought: false,
-      dateAdded: "2024-07-03T11:30:00Z",
-      quantity: 12,
-    },
-    {
-      id: "3",
-      name: "Bread",
-      priority: "Middle",
-      bought: false,
-      dateAdded: "2024-07-05T09:00:00Z",
-      quantity: 1,
-    },
-    {
-      id: "4",
-      name: "Coffee",
-      priority: "High",
-      bought: false,
-      dateAdded: "2024-06-28T14:00:00Z",
-      quantity: 1,
-    },
-    {
-      id: "5",
-      name: "Snacks",
-      priority: "Low",
-      bought: false,
-      dateAdded: "2024-07-08T16:00:00Z",
-      quantity: 3,
-    },
-    {
-      id: "6",
-      name: "Shampoo",
-      priority: "Middle",
-      bought: false,
-      dateAdded: "2024-07-02T10:00:00Z",
-      quantity: 1,
-    },
-    {
-      id: "7",
-      name: "Vegetables",
-      priority: "High",
-      bought: false,
-      dateAdded: "2024-07-09T08:00:00Z",
-      quantity: 5,
-    },
-    {
-      id: "8",
-      name: "Chocolate",
-      priority: "Low",
-      bought: false,
-      dateAdded: "2024-07-07T19:00:00Z",
-      quantity: 2,
-    },
-    {
-      id: "9",
-      name: "Fruits",
-      priority: "Middle",
-      bought: false,
-      dateAdded: "2024-07-06T12:00:00Z",
-      quantity: 4,
-    },
-    {
-      id: "10",
-      name: "Toothpaste",
-      priority: "Low",
-      bought: false,
-      dateAdded: "2024-07-04T09:00:00Z",
-      quantity: 1,
-    },
-    {
-      id: "11",
-      name: "Rice",
-      priority: "High",
-      bought: false,
-      dateAdded: "2024-07-01T10:00:00Z",
-      quantity: 1,
-    },
-    {
-      id: "12",
-      name: "Pasta",
-      priority: "Middle",
-      bought: false,
-      dateAdded: "2024-07-03T11:30:00Z",
-      quantity: 2,
-    },
-    {
-      id: "13",
-      name: "Chicken",
-      priority: "High",
-      bought: false,
-      dateAdded: "2024-07-05T09:00:00Z",
-      quantity: 1,
-    },
-    {
-      id: "14",
-      name: "Fish",
-      priority: "Middle",
-      bought: false,
-      dateAdded: "2024-06-28T14:00:00Z",
-      quantity: 1,
-    },
-    {
-      id: "15",
-      name: "Cereal",
-      priority: "Low",
-      bought: false,
-      dateAdded: "2024-07-08T16:00:00Z",
-      quantity: 1,
-    },
-  ]);
-
-  // State for modal visibility and the item being edited
+  const [shoppingList, setShoppingList] = useState<ShoppingItem[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [itemToEdit, setItemToEdit] = useState<ShoppingItem | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Function to toggle the 'bought' status of an item
-  const toggleBought = (id: string) => {
-    setShoppingList((prevList) =>
-      prevList.map((item) =>
-        item.id === id ? { ...item, bought: !item.bought } : item
-      )
-    );
+  // Load data when screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      loadShoppingList();
+    }, [])
+  );
+
+  // Load shopping list from AsyncStorage
+  const loadShoppingList = async () => {
+    try {
+      const storedList = await AsyncStorage.getItem("shoppingList");
+      if (storedList) {
+        setShoppingList(JSON.parse(storedList));
+      } else {
+        // Initialize with default items if no data exists
+        const defaultItems = [
+          {
+            id: "1",
+            name: "Milk",
+            priority: "High" as const,
+            bought: false,
+            dateAdded: "2024-07-01T10:00:00Z",
+            quantity: 2,
+          },
+          {
+            id: "2",
+            name: "Eggs",
+            priority: "High" as const,
+            bought: false,
+            dateAdded: "2024-07-03T11:30:00Z",
+            quantity: 12,
+          },
+          {
+            id: "3",
+            name: "Bread",
+            priority: "Middle" as const,
+            bought: false,
+            dateAdded: "2024-07-05T09:00:00Z",
+            quantity: 1,
+          },
+        ];
+        setShoppingList(defaultItems);
+        await AsyncStorage.setItem(
+          "shoppingList",
+          JSON.stringify(defaultItems)
+        );
+      }
+    } catch (error) {
+      console.error("Error loading shopping list:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Function to remove an item from the list
+  // Save shopping list to AsyncStorage
+  const saveShoppingList = async (newList: ShoppingItem[]) => {
+    try {
+      await AsyncStorage.setItem("shoppingList", JSON.stringify(newList));
+      setShoppingList(newList);
+    } catch (error) {
+      console.error("Error saving shopping list:", error);
+    }
+  };
+
+  // Toggle bought status
+  const toggleBought = (id: string) => {
+    const updatedList = shoppingList.map((item) =>
+      item.id === id
+        ? {
+            ...item,
+            bought: !item.bought,
+            dateBought: !item.bought ? new Date().toISOString() : undefined,
+          }
+        : item
+    );
+    saveShoppingList(updatedList);
+  };
+
+  // Remove item
   const removeItem = (id: string) => {
     Alert.alert(
       "Confirm Deletion",
@@ -463,56 +405,71 @@ export default function TabHomeScreen() {
         { text: "Cancel", style: "cancel" },
         {
           text: "Delete",
-          onPress: () =>
-            setShoppingList((prevList) =>
-              prevList.filter((item) => item.id !== id)
-            ),
+          onPress: () => {
+            const updatedList = shoppingList.filter((item) => item.id !== id);
+            saveShoppingList(updatedList);
+          },
         },
       ]
     );
   };
 
-  // Function to handle saving an item from the modal (add or edit)
+  // Handle save item (add or edit)
   const handleSaveItem = (newItem: ShoppingItem) => {
+    let updatedList;
     if (itemToEdit) {
-      // Editing existing item
-      setShoppingList((prevList) =>
-        prevList.map((item) => (item.id === newItem.id ? newItem : item))
+      updatedList = shoppingList.map((item) =>
+        item.id === newItem.id ? newItem : item
       );
     } else {
-      // Adding new item
-      setShoppingList((prevList) => [...prevList, newItem]);
+      updatedList = [...shoppingList, newItem];
     }
-    setIsModalVisible(false); // Close modal
-    setItemToEdit(null); // Reset item to edit
+    saveShoppingList(updatedList);
+    setIsModalVisible(false);
+    setItemToEdit(null);
   };
 
-  // Function to open modal for adding a new item
+  // Handle add item
   const handleAddItemPress = () => {
-    setItemToEdit(null); // No item selected for editing
+    setItemToEdit(null);
     setIsModalVisible(true);
   };
 
-  // Function to open modal for editing an existing item
+  // Handle edit item
   const handleEditItemPress = (item: ShoppingItem) => {
-    setItemToEdit(item); // Set the item to be edited
+    setItemToEdit(item);
     setIsModalVisible(true);
   };
 
-  // Separate lists for bought and unbought items
+  // Filter unbought items only
   const unboughtItems = shoppingList.filter((item) => !item.bought);
-  const boughtItems = shoppingList.filter((item) => item.bought);
+  const boughtCount = shoppingList.filter((item) => item.bought).length;
+
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 bg-secondary justify-center items-center">
+        <Text className="text-primary text-lg">Loading...</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-secondary p-2">
-      {/* Custom Title Bar - "BuyTrack" */}
+      {/* Header */}
       <View className="flex-row items-center justify-between px-5 mt-4">
         <View className="flex-row items-center">
           <Text className="text-primary text-4xl font-semibold">BuyTrack</Text>
         </View>
+        {boughtCount > 0 && (
+          <View className="bg-green-100 px-3 py-1 rounded-full">
+            <Text className="text-green-700 font-semibold">
+              {boughtCount} bought
+            </Text>
+          </View>
+        )}
       </View>
 
-      {/* Main Content Area - White Rounded Box for Shopping List */}
+      {/* Main Content */}
       <View className="flex-1 bg-white rounded-3xl shadow-lg mt-4 p-4">
         <View className="flex-row items-center justify-between px-2 mt-2">
           <Text className="text-primary text-2xl font-semibold">
@@ -526,7 +483,7 @@ export default function TabHomeScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* ScrollView for Unbought Items */}
+        {/* Shopping List */}
         <ScrollView
           className="flex-1 px-2 mt-4"
           showsVerticalScrollIndicator={false}
@@ -543,32 +500,20 @@ export default function TabHomeScreen() {
               />
             ))
           ) : (
-            <Text className="text-gray-500 text-center mt-10">
-              No unbought items. Time to shop!
-            </Text>
-          )}
-
-          {/* Bought Items Section */}
-          {boughtItems.length > 0 && (
-            <View className="mt-8 border-t border-gray-300 pt-4">
-              <Text className="text-gray-700 text-xl font-semibold mb-3">
-                Bought Items
+            <View className="flex-1 justify-center items-center py-20">
+              <Ionicons name="basket-outline" size={80} color="#d1d5db" />
+              <Text className="text-gray-500 text-xl font-semibold mt-4">
+                No items in your list
               </Text>
-              {boughtItems.map((item) => (
-                <ShoppingListItem
-                  key={item.id}
-                  item={item}
-                  onToggleBought={toggleBought}
-                  onRemove={removeItem}
-                  onEdit={handleEditItemPress}
-                />
-              ))}
+              <Text className="text-gray-400 text-center mt-2 px-8">
+                Add items to get started with your shopping
+              </Text>
             </View>
           )}
         </ScrollView>
       </View>
 
-      {/* Add/Edit Item Modal */}
+      {/* Modal */}
       <AddEditItemModal
         isVisible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
