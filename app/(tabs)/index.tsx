@@ -429,7 +429,7 @@ export default function TabHomeScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-secondary p-2">
+    <SafeAreaView className="flex-1 bg-secondary ">
       {/* Header */}
       <View className="flex-row items-center justify-between px-5 mt-4">
         <View className="flex-row items-center">
