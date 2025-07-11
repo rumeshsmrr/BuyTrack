@@ -333,32 +333,7 @@ export default function TabHomeScreen() {
         setShoppingList(JSON.parse(storedList));
       } else {
         // Initialize with default items if no data exists
-        const defaultItems = [
-          {
-            id: "1",
-            name: "Milk",
-            priority: "High" as const,
-            bought: false,
-            dateAdded: "2024-07-01T10:00:00Z",
-            quantity: 2,
-          },
-          {
-            id: "2",
-            name: "Eggs",
-            priority: "High" as const,
-            bought: false,
-            dateAdded: "2024-07-03T11:30:00Z",
-            quantity: 12,
-          },
-          {
-            id: "3",
-            name: "Bread",
-            priority: "Middle" as const,
-            bought: false,
-            dateAdded: "2024-07-05T09:00:00Z",
-            quantity: 1,
-          },
-        ];
+        const defaultItems: ShoppingItem[] = [];
         setShoppingList(defaultItems);
         await AsyncStorage.setItem(
           "shoppingList",
