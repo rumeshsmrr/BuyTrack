@@ -1,50 +1,46 @@
-# Welcome to your Expo app 👋
+# Prioritized Shopping List App 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app). It's a shopping list application designed to help you manage your purchases with **item prioritization**, **spending tracking**, and **purchase date tracking**.
 
-## Get started
+---
 
-1. Install dependencies
+## Features
 
-   ```bash
-   npm install
-   ```
+* **Item Prioritization:** Organize your shopping items by importance, ensuring you focus on what's most essential.
+* **Bought Item Tracking:** Easily mark items as bought, keeping your list accurate and up-to-date.
+* **Spending Tracking by Priority:** Monitor your expenditure across different priority levels to manage your budget effectively.
+* **Purchase Date Tracking:** Keep tabs on when you last bought specific items, helpful for recurring purchases and inventory management.
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## Get Started
 
-In the output, you'll find options to open the app in a
+Follow these steps to set up and run the app on your local machine:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+1.  **Install Dependencies:**
+    Navigate to the project directory in your terminal and run:
+    ```bash
+    npm install
+    ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+2.  **Start the App:**
+    Once dependencies are installed, start the development server:
+    ```bash
+    npx expo start
+    ```
+    This command will provide options to open the app in various environments:
+    * **[Development Build](https://docs.expo.dev/develop/development-builds/introduction/):** For a full development experience.
+    * **[Android Emulator](https://docs.expo.dev/workflow/android-studio-emulator/):** Test on a virtual Android device.
+    * **[iOS Simulator](https://docs.expo.dev/workflow/ios-simulator/):** Test on a virtual iOS device.
+    * **[Expo Go](https://expo.dev/go):** A limited sandbox for quickly previewing your app on your physical mobile device.
 
-## Get a fresh project
+You can begin developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-When you're ready, run:
+---
+
+## Get a Fresh Project
+
+If you want to reset your project and start with a blank **app** directory, while moving the initial starter code to **app-example**, run:
 
 ```bash
 npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
